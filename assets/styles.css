@@ -77,4 +77,77 @@ img {
     p {
         font-size: 0.9rem;
     }
+
+    .organiser h3 {
+        font-size: 1.3rem;
+    }
+
+    .organiser p {
+        font-size: 0.9rem;
+    }
+
+    .profile-picture {
+        width: 80px;  /* Responsive width */
+        height: 80px; /* Responsive height */
+    }
 }
+
+.organisers {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.organisers h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+}
+
+.organiser {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.organiser h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.organiser p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.organiser a {
+    color: #1a73e8;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.organiser a:hover {
+    color: #0056b3;
+}
+
+
+.profile-picture {
+    width: 100px; /* Change to your desired width */
+    height: 100px; /* Change to your desired height */
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.profile-picture:hover {
+    transform: scale(1.1); /* Zoom effect on hover */
+}
+
