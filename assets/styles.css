@@ -151,3 +151,16 @@ img {
     transform: scale(1.1); /* Zoom effect on hover */
 }
 
+/* Custom styles for Google Maps */
+.map-container {
+    height: 400px; /* Desired height for the map */
+    width: 100%;
+    margin: 20px auto; /* Center the container and add some margin */
+    text-align: center; /* Center align iframe inside the container */
+}
+
+.map-container iframe {
+    border: 0; /* Remove border from iframe */
+    width: 100%; /* Make iframe fill the container */
+    height: 100%; /* Make iframe fill the container */
+}

@@ -26,6 +26,10 @@
     <h2>Meetup Details</h2>
     <p><strong>When:</strong> We meet on the 7th and 21st of every month</p>
     <p><strong>Where:</strong> The White Cross, Lancaster, United Kingdom</p>
+    <p><strong>Next Meetup:</strong> <span id="next-meetup-date"></span>, 18:00 GMT</p>
+    <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2342.5578179480435!2d-2.798412222922034!3d54.0461122221352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487b628747ba2aff%3A0x8d116190911a20be!2sThe%20White%20Cross!5e0!3m2!1sen!2suk!4v1723131659588!5m2!1sen!2suk" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
 </section>
 
 <section class="members">
@@ -79,5 +83,57 @@
 <footer>
     <p>© 2024 Software Lancaster - All rights reserved.</p>
 </footer>
+
+<script>
+    function getNextMeetupDate() {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        
+        // Create Dates for the 7th and 21st of the current month
+        const meetup7th = new Date(currentYear, currentMonth, 7);
+        const meetup21st = new Date(currentYear, currentMonth, 21);
+    
+        // Helper function to get the next Monday if the date is on a weekend
+        function getNextMonday(date) {
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+            if (dayOfWeek === 6) {
+                // Saturday
+                return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 2);
+            } else if (dayOfWeek === 0) {
+                // Sunday
+                return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+            }
+            return date; // Return the original date if it's not a weekend
+        }
+    
+        // Check the next possible meetup dates
+        const nextMeetup7th = getNextMonday(meetup7th);
+        const nextMeetup21st = getNextMonday(meetup21st);
+    
+        // Determine which is the next upcoming meetup date
+        let nextMeetup;
+        if (today < nextMeetup7th) {
+            nextMeetup = nextMeetup7th;
+        } else if (today < nextMeetup21st) {
+            nextMeetup = nextMeetup21st;
+        } else {
+            // If both dates are in the past, calculate the next month's meetup
+            const nextMonth = currentMonth + 1;
+            const nextMeetup7thNextMonth = getNextMonday(new Date(currentYear, nextMonth, 7));
+            nextMeetup = nextMeetup7thNextMonth;
+        }
+    
+        // Format the date as a human-readable string
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        return nextMeetup.toLocaleDateString('en-GB', options);
+    }
+    
+    // Set the next meetup date in the HTML
+    document.addEventListener('DOMContentLoaded', function() {
+        const nextMeetupDateElement = document.getElementById('next-meetup-date');
+        nextMeetupDateElement.textContent = getNextMeetupDate();
+    });
+</script>
 </body>
 </html>
