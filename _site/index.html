@@ -10,6 +10,7 @@
 <header>
     <h1>Software Lancaster</h1>
     <p>A social circle for software professionals in Lancaster, UK</p>
+    <script src="assets/js/schedule.js"></script>
 </header>
 
 <section class="about">
@@ -84,7 +85,12 @@
     <p>© 2024 Software Lancaster - All rights reserved.</p>
 </footer>
 
-<script src="assets/js/schedule.js">
+<script>
+// Set the next meetup date in the HTML
+document.addEventListener('DOMContentLoaded', function() {
+    const nextMeetupDateElement = document.getElementById('next-meetup-date');
+    nextMeetupDateElement.textContent = getNextMeetupDate();
+});
 </script>
 </body>
 </html>
