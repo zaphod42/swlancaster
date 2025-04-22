@@ -32,8 +32,7 @@ function getNextMeetupDate(date = new Date()) {
     } else {
         // If both dates are in the past, calculate the next month's meetup
         const nextMonth = currentMonth + 1;
-        const nextMeetup7thNextMonth = getNextMonday(new Date(currentYear, nextMonth, 7));
-        nextMeetup = nextMeetup7thNextMonth;
+        nextMeetup = getNextMonday(new Date(currentYear, nextMonth, 7));
     }
 
     // Format the date as a human-readable string
