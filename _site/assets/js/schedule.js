@@ -17,15 +17,6 @@ function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
             return date.getDay() === 0;
         }
 
-        function rollAwayFromWeekend(date) {
-            if (isSaturday(date)) {
-                return new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1);
-            } else if (isSunday(date)) {
-                return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-            }
-            return date; // Return the original date if it's not a weekend
-        }
-
         function rollForward(date) {
             if (isSaturday(date) || isSunday(date) || isBankHoliday(date)) {
                 return rollForward(new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1));
@@ -54,7 +45,7 @@ function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
         }
 
         function nextMonth(date) {
-            if(date.getMonth() == 11) {
+            if(date.getMonth() === 11) {
                 return new Date(date.getFullYear() + 1, 0, 1);
             } else {
                 return new Date(date.getFullYear(), date.getMonth() + 1, 1);
