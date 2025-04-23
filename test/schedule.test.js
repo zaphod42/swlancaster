@@ -82,5 +82,9 @@ describe("skipping bank holidays", () => {
         test('rolls backward if the next day is also a bank holiday', () => {
             expect(getNextMeetupDate(new Date("18 May 2025"), bankHolidaysOn(["2025-05-21", "2025-05-22"]))).toBe("Tuesday 20 May")
         });
+
+        test('rolls forward to Monday when it falls on a saturday preceeded by a bank holiday', () => {
+            expect(getNextMeetupDate(new Date("16 December 2024"), bankHolidaysOn(["2024-12-20"]))).toBe("Monday 23 December");
+        });
     });
 });
