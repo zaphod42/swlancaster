@@ -81,4 +81,6 @@ function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
     return formateDate(nextMeetup);
 }
 
-module.exports = getNextMeetupDate;
+if(typeof exports !== 'undefined') {
+    module.exports = getNextMeetupDate;
+}
