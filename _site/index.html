@@ -10,7 +10,6 @@
 <header>
     <h1>Software Lancaster</h1>
     <p>A social circle for software professionals in Lancaster, UK</p>
-    <script src="assets/js/schedule.js"></script>
 </header>
 
 <section class="about">
@@ -85,23 +84,24 @@
     <p>© 2024 Software Lancaster - All rights reserved.</p>
 </footer>
 
-<script>
-// Set the next meetup date in the HTML
-document.addEventListener('DOMContentLoaded', function() {
-    const nextMeetupDateElement = document.getElementById('next-meetup-date');
-    fetch('https://www.gov.uk/bank-holidays.json').then((response) => {
-        if(response.ok) {
-            response.json().then((json) => {
-                nextMeetupDateElement.textContent = getNextMeetupDate(new Date(), json);
-            })
-        } else {
-            console.error(response);
-            nextMeetupDateElement.textContent = "Error calculating next meetup date.";
-        }
-    }).catch((error) => {
-        nextMeetupDateElement.textContent = `Error calculating next meetup date: ${error}`;
+<script type="module">
+    import getNextMeetupDate from "./assets/js/schedule.mjs";
+    // Set the next meetup date in the HTML
+    document.addEventListener('DOMContentLoaded', function() {
+        const nextMeetupDateElement = document.getElementById('next-meetup-date');
+        fetch('https://www.gov.uk/bank-holidays.json').then((response) => {
+            if(response.ok) {
+                response.json().then((json) => {
+                    nextMeetupDateElement.textContent = getNextMeetupDate(new Date(), json);
+                })
+            } else {
+                console.error(response);
+                nextMeetupDateElement.textContent = "Error calculating next meetup date.";
+            }
+        }).catch((error) => {
+            nextMeetupDateElement.textContent = `Error calculating next meetup date: ${error}`;
+        });
     });
-});
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
+export default function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
     function calculateNextMeetupDate(date) {
         function isBankHoliday(date) {
             function fallsOnDate(event) {
@@ -79,8 +79,4 @@ function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
     // Format the date as a human-readable string
     const nextMeetup = calculateNextMeetupDate(date);
     return formateDate(nextMeetup);
-}
-
-if(typeof exports !== 'undefined') {
-    module.exports = getNextMeetupDate;
 }
