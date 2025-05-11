@@ -1,7 +1,6 @@
 import getNextMeetupDate from "./schedule.mjs";
 
-export default function run(document, console) {
-    // Set the next meetup date in the HTML
+function showNextMeetingDate(document, console, fetch) {
     document.addEventListener('DOMContentLoaded', function () {
         const nextMeetupDateElement = document.getElementById('next-meetup-date');
         fetch('https://www.gov.uk/bank-holidays.json').then((response) => {
@@ -17,4 +16,8 @@ export default function run(document, console) {
             nextMeetupDateElement.textContent = `Error calculating next meetup date: ${error}`;
         });
     });
+}
+
+export default function run(document, console, fetch) {
+    showNextMeetingDate(document, console, fetch);
 }
