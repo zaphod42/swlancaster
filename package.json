@@ -1,6 +1,10 @@
 {
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "build": "rm -rf build; mkdir -p build/assets/js; esbuild _site/assets/js/app.mjs --bundle --outfile=build/assets/js/app.mjs && cp -a _site/assets/img build/assets && cp _site/assets/styles.css build/assets/styles.css && cp _site/index.html build/index.html"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.25.4"
+  }
 }

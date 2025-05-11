@@ -19,16 +19,16 @@
         to socialize, share experiences, and enjoy good company. We're not about formal talks
         or presentations—just friendly conversations over a drink or two.
     </p>
-    <img src="assets/img/in_the_pub.jpeg"/>
+    <img alt="A picture of members of the group around a table in the pub laughing." src="assets/img/in_the_pub.jpeg"/>
 </section>
 
 <section class="details">
     <h2>Meetup Details</h2>
-    <p><strong>When:</strong> We meet on the 7th and 21st of every month</p>
-    <p><strong>Where:</strong> The White Cross, Lancaster, United Kingdom</p>
+    <p><strong>When:</strong> We meet on the 7th and 21st of every month (unless on a weekend, etc., etc.)</p>
+    <p><strong>Where:</strong> The Water Witch, Lancaster, United Kingdom</p>
     <p><strong>Next Meetup:</strong> <span id="next-meetup-date"></span>, 18:00 GMT</p>
     <div class="map-container">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2342.5578179480435!2d-2.798412222922034!3d54.0461122221352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487b628747ba2aff%3A0x8d116190911a20be!2sThe%20White%20Cross!5e0!3m2!1sen!2suk!4v1723131659588!5m2!1sen!2suk" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2342.6906922387625!2d-2.8032725221071813!3d54.04375497249973!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487b627c9e9aef25%3A0xf2c31f42988f17a2!2sThe%20Waterwitch!5e0!3m2!1sen!2suk!4v1745414572994!5m2!1sen!2suk" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 </section>
 
@@ -85,23 +85,8 @@
 </footer>
 
 <script type="module">
-    import getNextMeetupDate from "./assets/js/schedule.mjs";
-    // Set the next meetup date in the HTML
-    document.addEventListener('DOMContentLoaded', function() {
-        const nextMeetupDateElement = document.getElementById('next-meetup-date');
-        fetch('https://www.gov.uk/bank-holidays.json').then((response) => {
-            if(response.ok) {
-                response.json().then((json) => {
-                    nextMeetupDateElement.textContent = getNextMeetupDate(new Date(), json);
-                })
-            } else {
-                console.error(response);
-                nextMeetupDateElement.textContent = "Error calculating next meetup date.";
-            }
-        }).catch((error) => {
-            nextMeetupDateElement.textContent = `Error calculating next meetup date: ${error}`;
-        });
-    });
+    import run from './assets/js/app.mjs';
+    run(document, console);
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import getNextMeetupDate from "../_site/assets/js/schedule.mjs";'../_site/assets/js/schedule.mjs';
+import getNextMeetupDate from '../_site/assets/js/schedule.mjs'
 import { test, describe } from 'node:test'
 import assert from 'node:assert'
 

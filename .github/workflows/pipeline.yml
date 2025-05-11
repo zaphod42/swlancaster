@@ -43,9 +43,12 @@ jobs:
           node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
       - run: npm ci
       - run: npm test
+      - run: npm build
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build/'
 
   # Deployment job
   deploy:
