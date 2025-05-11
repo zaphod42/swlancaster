@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "node --test",
-    "build": "rm -rf build; mkdir -p build/assets/js; esbuild _site/assets/js/app.mjs --bundle --outfile=build/assets/js/app.mjs && cp -a _site/assets/img build/assets && cp _site/assets/styles.css build/assets/styles.css && cp _site/index.html build/index.html"
+    "build": "rm -rf build; mkdir -p build/assets/js; esbuild _site/assets/js/app.mjs --bundle --format=esm --outfile=build/assets/js/app.mjs && cp -a _site/assets/img build/assets && cp _site/assets/styles.css build/assets/styles.css && cp _site/index.html build/index.html"
   },
   "type": "module",
   "devDependencies": {
