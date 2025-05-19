@@ -23,7 +23,9 @@ function showNextMeetingDate(document, console, fetch) {
 }
 
 function connectLoginAction(document) {
-    connectAuthEmulator(getAuth(), 'http://localhost:9099');
+    if(document.location.hostname === 'localhost') {
+        connectAuthEmulator(getAuth(), 'http://localhost:9099');
+    }
     const ui = new firebaseui.auth.AuthUI(firebase.auth());
     ui.start(document.getElementById('firebaseui-auth-container'), {
         signInOptions: [{
