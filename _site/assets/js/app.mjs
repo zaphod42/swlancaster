@@ -2,8 +2,7 @@ import getNextMeetup from './schedule.mjs';
 import { renderSignupWidget } from "./signup.mjs";
 import { Services } from "./services.mjs";
 
-async function showNextMeetingDate(document, console, fetch) {
-    const nextMeetupDateElement = document.getElementById('next-meetup-date');
+async function showNextMeetingDate(nextMeetupDateElement, console, fetch) {
     try {
         const response = await fetch('https://www.gov.uk/bank-holidays.json');
         if (response.ok) {
@@ -21,11 +20,10 @@ async function showNextMeetingDate(document, console, fetch) {
 }
 
 export default async function run(document, localStorage, console, fetch) {
-    const meetup = await showNextMeetingDate(document, console, fetch);
-    if (document.location.search.match('.*\\bfeature=login\\b.*')) {
-        let useAuthEmulator = location.hostname === 'localhost';
-        const services = new Services(localStorage, useAuthEmulator);
-        await services.initialize();
-        await renderSignupWidget(document.getElementById('signup-container'), meetup, document.location, services);
-    }
+    let useEmulators = location.hostname === 'localhost';
+    const services = new Services(localStorage, useEmulators);
+    await services.initialize();
+
+    const meetup = await showNextMeetingDate(document.getElementById('next-meetup-date'), console, fetch);
+    await renderSignupWidget(document.getElementById('signup-container'), meetup, document.location, services);
 }
