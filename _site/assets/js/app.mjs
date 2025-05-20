@@ -26,6 +26,6 @@ export default function run(document, console, fetch) {
         let useAuthEmulator = location.hostname === 'localhost';
         const services = new Services(useAuthEmulator);
         services.initialize();
-        connectSignupAction(document.getElementById('firebaseui-auth-container'), document.location, services);
+        connectSignupAction(document.getElementById('signup-container'), document.location, services);
     }
 }
