@@ -19,11 +19,16 @@ async function showNextMeetingDate(nextMeetupDateElement, console, fetch) {
     }
 }
 
+async function renderAttendanceWidget(element, meetup, services) {
+    element.innerHTML = `<p>There are ${await services.numberSignedUp(meetup)} attending.</p>`;
+}
+
 export default async function run(document, localStorage, console, fetch) {
-    let useEmulators = location.hostname === 'localhost';
+    let useEmulators = document.location.hostname === 'localhost';
     const services = new Services(localStorage, useEmulators);
     await services.initialize();
 
     const meetup = await showNextMeetingDate(document.getElementById('next-meetup-date'), console, fetch);
     await renderSignupWidget(document.getElementById('signup-container'), meetup, document.location, services);
+    await renderAttendanceWidget(document.getElementById('attendance-container'), meetup, services);
 }

@@ -9,7 +9,7 @@ import {
     setPersistence,
     signInWithEmailLink
 } from "firebase/auth";
-import { connectFirestoreEmulator, deleteDoc, doc, getDoc, getFirestore, runTransaction } from 'firebase/firestore';
+import { connectFirestoreEmulator, collection, getCountFromServer, deleteDoc, doc, getDoc, getFirestore, runTransaction } from 'firebase/firestore';
 
 export class Services {
     #useEmulators;
@@ -90,6 +90,11 @@ export class Services {
 
         const signup = await getDoc(this.#getSignupRef(meetup));
         return signup.exists();
+    }
+
+    async numberSignedUp(meetup) {
+        const result = await getCountFromServer(collection(this.#db, 'meetups', meetup.id, 'signups'));
+        return result.data().count;
     }
 
     getLocal(key) {
