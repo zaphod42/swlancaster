@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom'
 class DummyServices{
     constructor() {
         this.verificationsSent = [];
+        this.localStorage = {};
     }
 
     sendVerificationEmail(email, returnLocation) {
@@ -19,6 +20,18 @@ class DummyServices{
     setVerificationLocation(location) {
         this.verificationLocation = location;
     }
+
+    clearLocalStorage() {
+        this.localStorage = {};
+    }
+
+    setLocal(key, value) {
+        this.localStorage[key] = value;
+    }
+
+    getLocal(key) {
+        return this.localStorage[key];
+    }
 }
 
 function createElement() {
@@ -26,6 +39,12 @@ function createElement() {
 }
 
 const testLocation = new URL('http://localhost:3001/testing');
+
+function submitSignup(element, services, email) {
+    connectSignupAction(element, testLocation, services);
+    element.querySelector('input').value = email;
+    element.querySelector('button').click();
+}
 
 describe("signup widget", () => {
     test('it renders the email entry button by default', () => {
@@ -42,9 +61,7 @@ describe("signup widget", () => {
         const element = createElement();
         const services = new DummyServices();
 
-        connectSignupAction(element, new URL('http://localhost:3001/testing'), services);
-        element.querySelector('input').value = 'test@example.com';
-        element.querySelector('button').click();
+        submitSignup(element, services, 'test@example.com');
 
         assert.ok(services.verificationsSent[0].email === 'test@example.com');
         assert.match(element.innerHTML, /You will receive an email/);
@@ -53,10 +70,23 @@ describe("signup widget", () => {
     test('following the verification link shows a thank you', () => {
         const element = createElement();
         const services = new DummyServices();
-        services.setVerificationLocation(testLocation);
+        submitSignup(element, services, 'test@example.com');
 
+        services.setVerificationLocation(testLocation);
         connectSignupAction(element, testLocation, services);
 
         assert.match(element.innerHTML, /Thank you for signing up!/);
+    })
+
+    test('opening the verification link on a different device shows a warning', () => {
+        const element = createElement();
+        const services = new DummyServices();
+        submitSignup(element, services, 'test@example.com');
+
+        services.setVerificationLocation(testLocation);
+        services.clearLocalStorage(); // different device identified by empty storage
+        connectSignupAction(element, testLocation, services);
+
+        assert.match(element.innerHTML, /You have opened the verification link on a different device. Please follow the link on the original device./);
     })
 });
