@@ -4,11 +4,13 @@ import assert from 'node:assert'
 import { JSDOM } from 'jsdom'
 
 class DummyServices{
-    constructor() {
-        this.verificationsSent = [];
-        this.localStorage = {};
-    }
+    #localStorage = {};
+    verificationsSent = [];
+    signedInEmails = [];
 
+    /***
+     * Overrides/implementations of the Service interface
+     */
     sendVerificationEmail(email, returnLocation) {
         this.verificationsSent.push({ email, returnLocation });
     }
@@ -17,20 +19,32 @@ class DummyServices{
         return location === this.verificationLocation;
     }
 
+    signIn(email, location) {
+        this.signedInEmails.push({ email, location });
+        return Promise.resolve();
+    }
+
+    setLocal(key, value) {
+        this.#localStorage[key] = value;
+    }
+
+    getLocal(key) {
+        return this.#localStorage[key];
+    }
+
+    removeLocal(key) {
+        delete this.#localStorage[key];
+    }
+
+    /**
+     * Methods to manipulate the double's behaviour
+     */
     setVerificationLocation(location) {
         this.verificationLocation = location;
     }
 
     clearLocalStorage() {
-        this.localStorage = {};
-    }
-
-    setLocal(key, value) {
-        this.localStorage[key] = value;
-    }
-
-    getLocal(key) {
-        return this.localStorage[key];
+        this.#localStorage = {};
     }
 }
 
@@ -40,52 +54,64 @@ function createElement() {
 
 const testLocation = new URL('http://localhost:3001/testing');
 
-function submitSignup(element, services, email) {
-    connectSignupAction(element, testLocation, services);
+async function submitSignup(element, services, email) {
+    await connectSignupAction(element, testLocation, services);
     element.querySelector('input').value = email;
     element.querySelector('button').click();
 }
 
 describe("signup widget", () => {
-    test('it renders the email entry button by default', () => {
+    test('it renders the email entry button by default', async () => {
         const element = createElement();
         const services = new DummyServices();
 
-        connectSignupAction(element, testLocation, services);
+        await connectSignupAction(element, testLocation, services);
 
         assert.match(element.innerHTML, /Sign up/);
         assert.match(element.innerHTML, /Email:/);
     });
 
-    test('submitting an email sends a verification email', () => {
+    test('submitting an email sends a verification email', async () => {
         const element = createElement();
         const services = new DummyServices();
 
-        submitSignup(element, services, 'test@example.com');
+        await submitSignup(element, services, 'test@example.com');
 
         assert.ok(services.verificationsSent[0].email === 'test@example.com');
         assert.match(element.innerHTML, /You will receive an email/);
     });
 
-    test('following the verification link shows a thank you', () => {
+    test('following the verification link shows a thank you', async () => {
         const element = createElement();
         const services = new DummyServices();
-        submitSignup(element, services, 'test@example.com');
+        await submitSignup(element, services, 'test@example.com');
 
         services.setVerificationLocation(testLocation);
-        connectSignupAction(element, testLocation, services);
+        await connectSignupAction(element, testLocation, services);
 
         assert.match(element.innerHTML, /Thank you for signing up!/);
     })
 
-    test('opening the verification link on a different device shows a warning', () => {
+    test('following the verification link signs in the user', async () => {
         const element = createElement();
         const services = new DummyServices();
-        submitSignup(element, services, 'test@example.com');
+        await submitSignup(element, services, 'test@example.com');
+
+        services.setVerificationLocation(testLocation);
+        await connectSignupAction(element, testLocation, services);
+
+        assert.ok(services.signedInEmails[0].email === 'test@example.com');
+        assert.ok(!services.getLocal('email'));
+    })
+
+    test('opening the verification link on a different device shows a warning', async () => {
+        const element = createElement();
+        const services = new DummyServices();
+        await submitSignup(element, services, 'test@example.com');
 
         services.setVerificationLocation(testLocation);
         services.clearLocalStorage(); // different device identified by empty storage
-        connectSignupAction(element, testLocation, services);
+        await connectSignupAction(element, testLocation, services);
 
         assert.match(element.innerHTML, /You have opened the verification link on a different device. Please follow the link on the original device./);
     })

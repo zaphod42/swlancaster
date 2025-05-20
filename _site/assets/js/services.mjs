@@ -1,11 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth, sendSignInLinkToEmail, isSignInWithEmailLink } from "firebase/auth";
+import { connectAuthEmulator, getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 
 export class Services {
     #useAuthEmulator;
+    #localStorage;
 
-    constructor(useAuthEmulator) {
+    constructor(localStorage, useAuthEmulator) {
         this.#useAuthEmulator = useAuthEmulator;
+        this.#localStorage = localStorage;
     }
 
     initialize() {
@@ -32,5 +34,21 @@ export class Services {
 
     isVerificationLocation(location) {
         return isSignInWithEmailLink(getAuth(), location.toString());
+    }
+
+    signIn(email, location) {
+        return signInWithEmailLink(getAuth(), email, location.href);
+    }
+
+    getLocal(key) {
+        return this.#localStorage.getItem(key);
+    }
+
+    setLocal(key, value) {
+        this.#localStorage.setItem(key, value);
+    }
+
+    removeLocal(key) {
+        this.#localStorage.removeItem(key);
     }
 }

@@ -20,12 +20,12 @@ function showNextMeetingDate(document, console, fetch) {
     });
 }
 
-export default function run(document, console, fetch) {
+export default async function run(document, localStorage, console, fetch) {
     showNextMeetingDate(document, console, fetch);
-    if(document.location.search.match('.*\\bfeature=login\\b.*')) {
+    if (document.location.search.match('.*\\bfeature=login\\b.*')) {
         let useAuthEmulator = location.hostname === 'localhost';
-        const services = new Services(useAuthEmulator);
+        const services = new Services(localStorage, useAuthEmulator);
         services.initialize();
-        connectSignupAction(document.getElementById('signup-container'), document.location, services);
+        await connectSignupAction(document.getElementById('signup-container'), document.location, services);
     }
 }

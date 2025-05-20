@@ -1,6 +1,9 @@
-export function connectSignupAction(signupElement, location, services) {
-    if(services.isVerificationLocation(location)) {
-        if(services.getLocal('email')) {
+export async function connectSignupAction(signupElement, location, services) {
+    if (services.isVerificationLocation(location)) {
+        let email = services.getLocal('email');
+        if (email) {
+            await services.signIn(email, location);
+            services.removeLocal('email');
             signupElement.innerHTML = `
                 <h3>Thank you for signing up!</h3>
                 <p>We look forward to seeing you soon!</p>
