@@ -1,6 +1,7 @@
 import getNextMeetup from './schedule.mjs';
 import { renderSignupWidget } from "./signup.mjs";
 import { Services } from "./services.mjs";
+import { renderAttendanceWidget } from "./attendance.mjs";
 
 async function showNextMeetingDate(nextMeetupDateElement, console, fetch) {
     try {
@@ -17,10 +18,6 @@ async function showNextMeetingDate(nextMeetupDateElement, console, fetch) {
     } catch (error) {
         nextMeetupDateElement.textContent = `Error calculating next meetup date: ${error}`;
     }
-}
-
-async function renderAttendanceWidget(element, meetup, services) {
-    element.innerHTML = `<p>There are ${await services.numberSignedUp(meetup)} attending.</p>`;
 }
 
 export default async function run(document, localStorage, console, fetch) {
