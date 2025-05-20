@@ -1,6 +1,10 @@
-import getNextMeetupDate from '../_site/assets/js/schedule.mjs'
-import { test, describe } from 'node:test'
+import getNextMeetup from '../_site/assets/js/schedule.mjs'
+import { describe, test } from 'node:test'
 import assert from 'node:assert'
+
+function getNextMeetupDate(date, bankHolidays = {}) {
+    return getNextMeetup(date, bankHolidays).text;
+}
 
 describe("when the 7th is coming up", () => {
     test('shows the upcoming day', () => {

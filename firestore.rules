@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rules for the 'meetups' collection
+    // Any logged-in user can read meetup details.
+    // By default, no one can create, update, or delete meetups unless specified.
+    match /meetups/{meetupId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && !exists(/databases/$(database)/documents/meetups/$(meetupId));
+
+      // Deny write access to meetings for regular users.
+      allow update, delete: if false; // Prevents any user from updating/deleting meetings directly
+    }
+
+    // Rules for the 'signups' subcollection within each 'meetup'
+    // This is where individual user sign-up logic resides.
+    match /meetups/{meetupId}/signups/{userId} {
+
+      // Allow a user to create a new sign-up document.
+      // IMPORTANT: The document ID (`userId`) must match the authenticated user's UID.
+      // This prevents a user from signing up someone else.
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Allow any logged-in user to read (get or list) sign-up records for a meetup.
+      // This means a user can see who else has signed up for a specific meetup.
+      // If you only want users to see THEIR OWN signup, change this to:
+      // allow read: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+
+      // Allow a user to update their own sign-up record.
+      // The document ID (`userId`) must match the authenticated user's UID.
+      // This prevents a user from changing another user's sign-up status.
+      allow update: if request.auth != null && request.auth.uid == userId;
+
+      // Allow a user to delete their own sign-up record (to cancel).
+      // The document ID (`userId`) must match the authenticated user's UID.
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

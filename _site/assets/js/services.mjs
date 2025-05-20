@@ -1,13 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore, doc, runTransaction } from 'firebase/firestore';
 
 export class Services {
-    #useAuthEmulator;
+    #useEmulators;
     #localStorage;
     #currentUser;
+    #auth;
+    #db;
 
-    constructor(localStorage, useAuthEmulator) {
-        this.#useAuthEmulator = useAuthEmulator;
+    constructor(localStorage, useEmulators) {
+        this.#useEmulators= useEmulators;
         this.#localStorage = localStorage;
     }
 
@@ -22,30 +25,53 @@ export class Services {
         };
         initializeApp(firebaseConfig);
 
-        if (this.#useAuthEmulator) {
-            connectAuthEmulator(getAuth(), 'http://localhost:9099');
+        this.#db = await getFirestore();
+        this.#auth = await getAuth();
+
+        if (this.#useEmulators) {
+            connectAuthEmulator(this.#auth, 'http://localhost:9099');
+            connectFirestoreEmulator(this.#db, 'localhost', 8080);
         }
-        await setPersistence(getAuth(), browserLocalPersistence);
-        onAuthStateChanged(getAuth(), (user) => { this.#currentUser = user; });
+        await setPersistence(this.#auth, browserLocalPersistence);
+        onAuthStateChanged(this.#auth, (user) => { this.#currentUser = user; });
     }
 
     sendVerificationEmail(email, returnLocation) {
-        return sendSignInLinkToEmail(getAuth(), email, {
+        return sendSignInLinkToEmail(this.#auth, email, {
             url: returnLocation,
             handleCodeInApp: true
         });
     }
 
     isVerificationLocation(location) {
-        return isSignInWithEmailLink(getAuth(), location.toString());
+        return isSignInWithEmailLink(this.#auth, location.toString());
     }
 
     signIn(email, location) {
-        return signInWithEmailLink(getAuth(), email, location.href);
+        return signInWithEmailLink(this.#auth, email, location.href);
     }
 
     isSignedIn() {
         return !!this.#currentUser;
+    }
+
+    async signUp(meetup) {
+        if (!this.isSignedIn()) {
+            console.error("User must be logged in to sign up.");
+            return;
+        }
+
+        const meetupRef = doc(this.#db, 'meetups', meetup.id);
+        await runTransaction(this.#db, async (transaction) => {
+            console.log(getAuth().currentUser);
+            const meetupDoc = await transaction.get(meetupRef);
+            if(!meetupDoc.exists()) {
+                await transaction.set(meetupRef, { date: meetup.date, location: meetup.location });
+            }
+
+            const signupRef = doc(this.#db, 'meetups', meetup.id, 'signups', this.#currentUser.uid);
+            await transaction.set(signupRef, { signedUpAt: new Date() });
+        });
     }
 
     getLocal(key) {

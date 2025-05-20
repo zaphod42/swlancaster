@@ -1,4 +1,4 @@
-export default function getNextMeetupDate(date = new Date(), bankHolidaySchedule = {}) {
+export default function getNextMeetup(date, bankHolidaySchedule) {
     function calculateNextMeetupDate(date) {
         function isBankHoliday(date) {
             function fallsOnDate(event) {
@@ -70,13 +70,30 @@ export default function getNextMeetupDate(date = new Date(), bankHolidaySchedule
         }
     }
 
+    return new Meetup(calculateNextMeetupDate(date));
+}
 
-    function formateDate(date) {
-        const options = {weekday: 'long', month: 'long', day: 'numeric'};
-        return date.toLocaleDateString('en-GB', options);
+export class Meetup {
+    #date;
+
+    constructor(date) {
+        this.#date = date;
     }
 
-    // Format the date as a human-readable string
-    const nextMeetup = calculateNextMeetupDate(date);
-    return formateDate(nextMeetup);
+    get date() {
+        return this.#date;
+    }
+
+    get location() {
+        return "The Water Witch";
+    }
+
+    get text() {
+        const options = {weekday: 'long', month: 'long', day: 'numeric'};
+        return this.#date.toLocaleDateString('en-GB', options);
+    }
+
+    get id() {
+        return this.#date.toISOString().split(':')[0];
+    }
 }
