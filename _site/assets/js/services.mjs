@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth, sendSignInLinkToEmail } from "firebase/auth";
+import { connectAuthEmulator, getAuth, sendSignInLinkToEmail, isSignInWithEmailLink } from "firebase/auth";
 
 export class Services {
     #useAuthEmulator;
@@ -30,4 +30,7 @@ export class Services {
         });
     }
 
+    isVerificationLocation(location) {
+        return isSignInWithEmailLink(getAuth(), location.toString());
+    }
 }
