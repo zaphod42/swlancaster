@@ -5,10 +5,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "esbuild": "^0.25.4"
+    "esbuild": "^0.25.4",
+    "jsdom": "^26.1.0"
   },
   "dependencies": {
-    "firebaseui": "^6.1.0",
     "firebase": "^10"
   }
 }
