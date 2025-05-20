@@ -1,6 +1,6 @@
 import getNextMeetupDate from './schedule.mjs';
 import { connectSignupAction } from "./signup.mjs";
-import { Firebase } from "./firebase.mjs";
+import { Services } from "./services.mjs";
 
 function showNextMeetingDate(document, console, fetch) {
     document.addEventListener('DOMContentLoaded', function () {
@@ -24,8 +24,8 @@ export default function run(document, console, fetch) {
     showNextMeetingDate(document, console, fetch);
     if(document.location.search.match('.*\\bfeature=login\\b.*')) {
         let useAuthEmulator = location.hostname === 'localhost';
-        const firebase = new Firebase(useAuthEmulator);
-        firebase.initialize();
-        connectSignupAction(document.getElementById('firebaseui-auth-container'), document.location, firebase);
+        const services = new Services(useAuthEmulator);
+        services.initialize();
+        connectSignupAction(document.getElementById('firebaseui-auth-container'), document.location, services);
     }
 }

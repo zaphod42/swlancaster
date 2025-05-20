@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, sendSignInLinkToEmail } from "firebase/auth";
 
-export class Firebase {
+export class Services {
     #useAuthEmulator;
 
     constructor(useAuthEmulator) {
