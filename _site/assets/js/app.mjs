@@ -25,7 +25,7 @@ export default async function run(document, localStorage, console, fetch) {
     if (document.location.search.match('.*\\bfeature=login\\b.*')) {
         let useAuthEmulator = location.hostname === 'localhost';
         const services = new Services(localStorage, useAuthEmulator);
-        services.initialize();
+        await services.initialize();
         await connectSignupAction(document.getElementById('signup-container'), document.location, services);
     }
 }

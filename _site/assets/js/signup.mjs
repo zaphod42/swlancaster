@@ -1,5 +1,7 @@
 export async function connectSignupAction(signupElement, location, services) {
-    if (services.isVerificationLocation(location)) {
+    if (services.isSignedIn()) {
+        signupElement.innerHTML = ``;
+    }else if (services.isVerificationLocation(location)) {
         let email = services.getLocal('email');
         if (email) {
             await services.signIn(email, location);

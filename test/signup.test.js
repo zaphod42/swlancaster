@@ -24,6 +24,10 @@ class DummyServices{
         return Promise.resolve();
     }
 
+    isSignedIn() {
+        return this.signedInEmails.length > 0;
+    }
+
     setLocal(key, value) {
         this.#localStorage[key] = value;
     }
@@ -114,5 +118,18 @@ describe("signup widget", () => {
         await connectSignupAction(element, testLocation, services);
 
         assert.match(element.innerHTML, /You have opened the verification link on a different device. Please follow the link on the original device./);
+    })
+
+    test('does not show the different-device warning if the user is signed in', async () => {
+        const element = createElement();
+        const services = new DummyServices();
+        await submitSignup(element, services, 'test@example.com');
+        services.setVerificationLocation(testLocation);
+        await connectSignupAction(element, testLocation, services);
+        services.setVerificationLocation(null);
+
+        await connectSignupAction(element, testLocation, services);
+
+        assert.equal(element.innerHTML, '');
     })
 });
