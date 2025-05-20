@@ -22,11 +22,8 @@ service cloud.firestore {
       // This prevents a user from signing up someone else.
       allow create: if request.auth != null && request.auth.uid == userId;
 
-      // Allow any logged-in user to read (get or list) sign-up records for a meetup.
-      // This means a user can see who else has signed up for a specific meetup.
-      // If you only want users to see THEIR OWN signup, change this to:
-      // allow read: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null;
+      // Allow any user to read (get or list) sign-up records for a meetup.
+      allow read: if true;
 
       // Allow a user to update their own sign-up record.
       // The document ID (`userId`) must match the authenticated user's UID.

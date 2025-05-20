@@ -1,5 +1,5 @@
 import getNextMeetup from './schedule.mjs';
-import { connectSignupAction } from "./signup.mjs";
+import { renderSignupWidget } from "./signup.mjs";
 import { Services } from "./services.mjs";
 
 async function showNextMeetingDate(document, console, fetch) {
@@ -26,6 +26,6 @@ export default async function run(document, localStorage, console, fetch) {
         let useAuthEmulator = location.hostname === 'localhost';
         const services = new Services(localStorage, useAuthEmulator);
         await services.initialize();
-        await connectSignupAction(document.getElementById('signup-container'), meetup, document.location, services);
+        await renderSignupWidget(document.getElementById('signup-container'), meetup, document.location, services);
     }
 }

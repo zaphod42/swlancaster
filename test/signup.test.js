@@ -1,4 +1,4 @@
-import { connectSignupAction } from '../_site/assets/js/signup.mjs'
+import { renderSignupWidget } from '../_site/assets/js/signup.mjs'
 import { Meetup } from '../_site/assets/js/schedule.mjs'
 import { describe, test } from 'node:test'
 import assert from 'node:assert'
@@ -42,8 +42,16 @@ class DummyServices{
         delete this.#localStorage[key];
     }
 
-    signUp(_meetup) {
+    async signUp(_meetup) {
         this.signups++;
+    }
+
+    async cancelSignUp(_meetup) {
+        this.signups--;
+    }
+
+    async isSignedUp(_meetup) {
+        return this.signups > 0;
     }
 
     /**
@@ -66,17 +74,36 @@ const testLocation = new URL('http://localhost:3001/testing');
 const meetup = new Meetup(new Date());
 
 async function submitSignup(element, services, email) {
-    await connectSignupAction(element, meetup, testLocation, services);
+    await renderSignupWidget(element, meetup, testLocation, services);
     element.querySelector('button').click();
     element.querySelector('input').value = email;
     element.querySelector('button').click();
 }
 
 describe("signup widget", () => {
+    test('shows a sign up button if the user is signed in', async () => {
+        const element = createElement();
+        const services = new DummyServices();
+        await services.signIn('test@example.com', testLocation);
+
+        await renderSignupWidget(element, meetup, testLocation, services);
+
+        assert.match(element.innerHTML, /Sign Up/);
+    })
+
+    test('shows a sign up button if the user is not signed in', async () => {
+        const element = createElement();
+        const services = new DummyServices();
+
+        await renderSignupWidget(element, meetup, testLocation, services);
+
+        assert.match(element.innerHTML, /Sign Up/);
+    })
+
     test('it renders the email entry button if the user is not signed in', async () => {
         const element = createElement();
         const services = new DummyServices();
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
         element.querySelector('button').click();
 
         assert.match(element.innerHTML, /Verify/);
@@ -87,7 +114,7 @@ describe("signup widget", () => {
         const element = createElement();
         const services = new DummyServices();
 
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
         element.querySelector('button').click();
         element.querySelector('input').value = 'test@example.com';
         element.querySelector('button').click();
@@ -102,7 +129,7 @@ describe("signup widget", () => {
         await submitSignup(element, services, 'test@example.com');
 
         services.setVerificationLocation(testLocation);
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
 
         assert.match(element.innerHTML, /Thank you for signing up!/);
     })
@@ -113,7 +140,7 @@ describe("signup widget", () => {
         await submitSignup(element, services, 'test@example.com');
 
         services.setVerificationLocation(testLocation);
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
 
         assert.ok(services.signedInEmails[0].email === 'test@example.com');
         assert.ok(!services.getLocal('email'));
@@ -125,7 +152,7 @@ describe("signup widget", () => {
         await submitSignup(element, services, 'test@example.com');
 
         services.setVerificationLocation(testLocation);
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
 
         assert.equal(services.signups, 1);
     })
@@ -137,30 +164,31 @@ describe("signup widget", () => {
 
         services.setVerificationLocation(testLocation);
         services.clearLocalStorage(); // different device identified by empty storage
-        await connectSignupAction(element, meetup, testLocation, services);
+        await renderSignupWidget(element, meetup, testLocation, services);
 
         assert.match(element.innerHTML, /You have opened the verification link on a different device. Please follow the link on the original device./);
     })
 
-    test('shows a sign up button if the user is signed in', async () => {
+    test('once signed up shows a button to say they are not going', async () => {
         const element = createElement();
         const services = new DummyServices();
-        await submitSignup(element, services, 'test@example.com');
-        services.setVerificationLocation(testLocation);
-        await connectSignupAction(element, meetup, testLocation, services);
-        services.setVerificationLocation(null);
+        await services.signIn('test@example.com', testLocation);
+        await renderSignupWidget(element, meetup, testLocation, services);
 
-        await connectSignupAction(element, meetup, testLocation, services);
+        await element.querySelector('button').click();
 
-        assert.match(element.innerHTML, /Sign Up/);
+        assert.match(element.innerHTML, /I'm not going/);
     })
 
-    test('shows a sign up button if the user is not signed in', async () => {
+    test('clicking the not going buttom cancels their signup', async () => {
         const element = createElement();
         const services = new DummyServices();
+        await services.signIn('test@example.com', testLocation);
+        await renderSignupWidget(element, meetup, testLocation, services);
+        await element.querySelector('button').click();
 
-        await connectSignupAction(element, meetup, testLocation, services);
+        await element.querySelector('button').click();
 
-        assert.match(element.innerHTML, /Sign Up/);
+        assert.match(element.innerHTML, /We are sorry that you can't make it./);
     })
 });

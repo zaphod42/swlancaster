@@ -1,6 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
-import { connectFirestoreEmulator, getFirestore, doc, runTransaction } from 'firebase/firestore';
+import {
+    browserLocalPersistence,
+    connectAuthEmulator,
+    getAuth,
+    isSignInWithEmailLink,
+    onAuthStateChanged,
+    sendSignInLinkToEmail,
+    setPersistence,
+    signInWithEmailLink
+} from "firebase/auth";
+import { connectFirestoreEmulator, deleteDoc, doc, getDoc, getFirestore, runTransaction } from 'firebase/firestore';
 
 export class Services {
     #useEmulators;
@@ -56,10 +65,7 @@ export class Services {
     }
 
     async signUp(meetup) {
-        if (!this.isSignedIn()) {
-            console.error("User must be logged in to sign up.");
-            return;
-        }
+        this.#assertLoggedIn();
 
         const meetupRef = doc(this.#db, 'meetups', meetup.id);
         await runTransaction(this.#db, async (transaction) => {
@@ -69,9 +75,21 @@ export class Services {
                 await transaction.set(meetupRef, { date: meetup.date, location: meetup.location });
             }
 
-            const signupRef = doc(this.#db, 'meetups', meetup.id, 'signups', this.#currentUser.uid);
-            await transaction.set(signupRef, { signedUpAt: new Date() });
+            await transaction.set(this.#getSignupRef(meetup), { signedUpAt: new Date() });
         });
+    }
+
+    async cancelSignUp(meetup) {
+        this.#assertLoggedIn();
+
+        await deleteDoc(this.#getSignupRef(meetup));
+    }
+
+    async isSignedUp(meetup) {
+        this.#assertLoggedIn();
+
+        const signup = await getDoc(this.#getSignupRef(meetup));
+        return signup.exists();
     }
 
     getLocal(key) {
@@ -84,5 +102,15 @@ export class Services {
 
     removeLocal(key) {
         this.#localStorage.removeItem(key);
+    }
+
+    #assertLoggedIn() {
+        if (!this.isSignedIn()) {
+            throw new Error('Invalid State: attempting a logged in operation while not logged in.');
+        }
+    }
+
+    #getSignupRef(meetup) {
+        return doc(this.#db, 'meetups', meetup.id, 'signups', this.#currentUser.uid);
     }
 }
