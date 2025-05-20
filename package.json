@@ -8,6 +8,7 @@
     "esbuild": "^0.25.4"
   },
   "dependencies": {
-    "firebaseui": "^6.1.0"
+    "firebaseui": "^6.1.0",
+    "firebase": "^10"
   }
 }
